@@ -492,6 +492,9 @@
         let originalFileSize = 0;
         let originalCanvas = null;
         const convertedImages = {};
+        
+        // Heatmap configuration
+        const HEATMAP_AMPLIFICATION = 10; // Multiplier for enhancing difference visibility
 
         // DOM elements
         const uploadArea = document.getElementById('uploadArea');
@@ -798,7 +801,7 @@
                 
                 // Create heatmap: red for differences, dark for similarities
                 // Amplify differences for better visibility
-                imageData.data[i] = Math.min(255, avgDiff * 10);    // R
+                imageData.data[i] = Math.min(255, avgDiff * HEATMAP_AMPLIFICATION);    // R
                 imageData.data[i + 1] = 0;                          // G
                 imageData.data[i + 2] = 0;                          // B
                 imageData.data[i + 3] = 255;                        // A
