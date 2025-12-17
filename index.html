@@ -681,7 +681,7 @@
             if (showHeatmap.checked) {
                 heatmapSection.style.display = 'block';
                 for (const [name, data] of Object.entries(convertedImages)) {
-                    const heatmap = createHeatmap(name, data.canvas);
+                    const heatmap = createHeatmap(name, data);
                     heatmapGrid.appendChild(heatmap);
                 }
             } else {
@@ -766,21 +766,26 @@
         }
 
         // Create heatmap
-        function createHeatmap(name, canvas) {
+        function createHeatmap(name, data) {
             const item = document.createElement('div');
             item.className = 'heatmap-item';
 
             const heatmapCanvas = document.createElement('canvas');
             heatmapCanvas.className = 'heatmap-canvas';
-            heatmapCanvas.width = canvas.width;
-            heatmapCanvas.height = canvas.height;
+            heatmapCanvas.width = data.image.width;
+            heatmapCanvas.height = data.image.height;
 
             const ctx = heatmapCanvas.getContext('2d');
-            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            const imageData = ctx.createImageData(data.image.width, data.image.height);
             
             // Get pixel data from converted image
-            const convertedCtx = canvas.getContext('2d');
-            const convertedData = convertedCtx.getImageData(0, 0, canvas.width, canvas.height);
+            // Create a temporary canvas to draw the re-encoded image
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = data.image.width;
+            tempCanvas.height = data.image.height;
+            const convertedCtx = tempCanvas.getContext('2d');
+            convertedCtx.drawImage(data.image, 0, 0);
+            const convertedData = convertedCtx.getImageData(0, 0, data.image.width, data.image.height);
 
             // Calculate pixel differences (ensure same dimensions)
             const maxLength = Math.min(originalImageData.data.length, convertedData.data.length);
@@ -792,7 +797,8 @@
                 const avgDiff = (rDiff + gDiff + bDiff) / 3;
                 
                 // Create heatmap: red for differences, dark for similarities
-                imageData.data[i] = Math.min(255, avgDiff * 5);     // R
+                // Amplify differences for better visibility
+                imageData.data[i] = Math.min(255, avgDiff * 10);    // R
                 imageData.data[i + 1] = 0;                          // G
                 imageData.data[i + 2] = 0;                          // B
                 imageData.data[i + 3] = 255;                        // A
