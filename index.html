@@ -583,11 +583,18 @@
             previewContainer.innerHTML = '';
             heatmapGrid.innerHTML = '';
             downloadButtons.innerHTML = '';
-            Object.keys(convertedImages).forEach(key => delete convertedImages[key]);
+            
+            // Revoke old blob URLs to prevent memory leaks
+            Object.keys(convertedImages).forEach(key => {
+                if (convertedImages[key].url) {
+                    URL.revokeObjectURL(convertedImages[key].url);
+                }
+                delete convertedImages[key];
+            });
 
             const quality = qualitySlider.value / 100;
             const formats = [
-                { name: 'PNG', mime: 'image/png', quality: 1 },
+                { name: 'PNG', mime: 'image/png', quality: undefined },
                 { name: 'JPEG', mime: 'image/jpeg', quality: quality },
                 { name: 'WebP', mime: 'image/webp', quality: quality }
             ];
@@ -775,8 +782,9 @@
             const convertedCtx = canvas.getContext('2d');
             const convertedData = convertedCtx.getImageData(0, 0, canvas.width, canvas.height);
 
-            // Calculate pixel differences
-            for (let i = 0; i < originalImageData.data.length; i += 4) {
+            // Calculate pixel differences (ensure same dimensions)
+            const maxLength = Math.min(originalImageData.data.length, convertedData.data.length);
+            for (let i = 0; i < maxLength; i += 4) {
                 const rDiff = Math.abs(originalImageData.data[i] - convertedData.data[i]);
                 const gDiff = Math.abs(originalImageData.data[i + 1] - convertedData.data[i + 1]);
                 const bDiff = Math.abs(originalImageData.data[i + 2] - convertedData.data[i + 2]);
