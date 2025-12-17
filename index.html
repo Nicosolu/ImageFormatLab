@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImageFormatLab - Image Format Converter & Comparison Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            padding: 40px;
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 60px 20px;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .quality-value {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 45px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .results {
+            padding: 40px;
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .format-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .format-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .format-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .format-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .format-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+        }
+
+        .format-stats {
+            margin-top: 15px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .preview-section {
+            margin-top: 40px;
+        }
+
+        .preview-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .preview-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .preview-item {
+            flex: 0 0 auto;
+            text-align: center;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .preview-canvas-wrapper {
+            position: relative;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+            cursor: zoom-in;
+        }
+
+        .preview-canvas-wrapper.zoomed {
+            cursor: zoom-out;
+        }
+
+        .preview-canvas {
+            display: block;
+            max-width: 300px;
+            max-height: 300px;
+        }
+
+        .preview-canvas.zoomed {
+            max-width: none;
+            max-height: none;
+        }
+
+        .heatmap-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+        }
+
+        .heatmap-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .heatmap-item {
+            text-align: center;
+        }
+
+        .heatmap-canvas {
+            display: block;
+            max-width: 100%;
+            border: 2px solid #ffc107;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .heatmap-label {
+            font-weight: 600;
+            margin-top: 10px;
+            color: #856404;
+        }
+
+        .download-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #d1ecf1;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .download-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .format-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-container {
+                flex-direction: column;
+            }
+            
+            .preview-canvas {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖼️ ImageFormatLab</h1>
+            <p class="subtitle">Convert & Compare Image Formats - PNG, JPEG, WebP, AVIF</p>
+        </header>
+
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h2>Drop an image here or click to browse</h2>
+                <p style="margin-top: 10px; color: #666;">Supports: JPG, PNG, GIF, BMP, WebP</p>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+        </div>
+
+        <div class="controls" id="controls" style="display: none;">
+            <div class="control-group">
+                <label>JPEG/WebP Quality:</label>
+                <div class="slider-container">
+                    <input type="range" id="qualitySlider" min="1" max="100" value="85">
+                    <span class="quality-value" id="qualityValue">85%</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showHeatmap">
+                    <label for="showHeatmap" style="margin-bottom: 0;">Show pixel-difference heatmap (advanced)</label>
+                </div>
+            </div>
+            <button class="btn" id="convertBtn">Convert Image</button>
+        </div>
+
+        <div class="results" id="results">
+            <div class="loading" id="loading">Converting image...</div>
+            
+            <div id="resultsContent" style="display: none;">
+                <h2 class="preview-header">Format Comparison</h2>
+                <div class="format-grid" id="formatGrid"></div>
+
+                <div class="preview-section">
+                    <h2 class="preview-header">Side-by-Side Preview (Click to Zoom)</h2>
+                    <div class="preview-container" id="previewContainer"></div>
+                </div>
+
+                <div class="heatmap-section" id="heatmapSection" style="display: none;">
+                    <h2 class="heatmap-header">Pixel Difference Heatmap</h2>
+                    <p style="color: #856404; margin-bottom: 15px;">Red areas indicate differences from the original image</p>
+                    <div class="heatmap-grid" id="heatmapGrid"></div>
+                </div>
+
+                <div class="download-section">
+                    <h3>Download Converted Images</h3>
+                    <div class="download-buttons" id="downloadButtons"></div>
+                </div>
+
+                <div class="info-section">
+                    <h3>💡 Understanding the Results</h3>
+                    <p><strong>File Size:</strong> Smaller is better for web performance, but may affect quality.</p>
+                    <p><strong>Compression Ratio:</strong> Higher means better compression (original size / new size).</p>
+                    <p><strong>Format Recommendations:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>WebP:</strong> Best balance of quality and size for modern browsers</li>
+                        <li><strong>AVIF:</strong> Best compression, but limited browser support</li>
+                        <li><strong>JPEG:</strong> Universal support, good for photos</li>
+                        <li><strong>PNG:</strong> Lossless, best for graphics with transparency</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let originalImage = null;
+        let originalImageData = null;
+        let originalFileSize = 0;
+        let originalCanvas = null;
+        const convertedImages = {};
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const controls = document.getElementById('controls');
+        const results = document.getElementById('results');
+        const loading = document.getElementById('loading');
+        const resultsContent = document.getElementById('resultsContent');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const showHeatmap = document.getElementById('showHeatmap');
+        const convertBtn = document.getElementById('convertBtn');
+        const formatGrid = document.getElementById('formatGrid');
+        const previewContainer = document.getElementById('previewContainer');
+        const heatmapSection = document.getElementById('heatmapSection');
+        const heatmapGrid = document.getElementById('heatmapGrid');
+        const downloadButtons = document.getElementById('downloadButtons');
+
+        // Event listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleImageUpload(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleImageUpload(file);
+            }
+        });
+
+        qualitySlider.addEventListener('input', (e) => {
+            qualityValue.textContent = e.target.value + '%';
+        });
+
+        convertBtn.addEventListener('click', convertImage);
+
+        // Handle image upload
+        function handleImageUpload(file) {
+            originalFileSize = file.size;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    controls.style.display = 'block';
+                    results.classList.remove('active');
+                    
+                    // Create canvas with original image
+                    originalCanvas = document.createElement('canvas');
+                    originalCanvas.width = img.width;
+                    originalCanvas.height = img.height;
+                    const ctx = originalCanvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    originalImageData = ctx.getImageData(0, 0, img.width, img.height);
+                };
+                img.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Convert image to multiple formats
+        async function convertImage() {
+            if (!originalImage) return;
+
+            results.classList.add('active');
+            loading.style.display = 'block';
+            resultsContent.style.display = 'none';
+            
+            // Clear previous results
+            formatGrid.innerHTML = '';
+            previewContainer.innerHTML = '';
+            heatmapGrid.innerHTML = '';
+            downloadButtons.innerHTML = '';
+            
+            // Revoke old blob URLs to prevent memory leaks
+            Object.keys(convertedImages).forEach(key => {
+                if (convertedImages[key].url) {
+                    URL.revokeObjectURL(convertedImages[key].url);
+                }
+                delete convertedImages[key];
+            });
+
+            const quality = qualitySlider.value / 100;
+            const formats = [
+                { name: 'PNG', mime: 'image/png', quality: undefined },
+                { name: 'JPEG', mime: 'image/jpeg', quality: quality },
+                { name: 'WebP', mime: 'image/webp', quality: quality }
+            ];
+
+            // Check AVIF support
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            try {
+                const avifSupport = canvas.toDataURL('image/avif').indexOf('data:image/avif') === 0;
+                if (avifSupport) {
+                    formats.push({ name: 'AVIF', mime: 'image/avif', quality: quality });
+                }
+            } catch (e) {
+                console.log('AVIF not supported');
+            }
+
+            // Convert to each format
+            for (const format of formats) {
+                try {
+                    const result = await convertToFormat(format.name, format.mime, format.quality);
+                    convertedImages[format.name] = result;
+                } catch (error) {
+                    console.error(`Error converting to ${format.name}:`, error);
+                }
+            }
+
+            // Display results
+            displayResults();
+            
+            loading.style.display = 'none';
+            resultsContent.style.display = 'block';
+        }
+
+        // Convert to specific format
+        function convertToFormat(name, mimeType, quality) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = originalImage.width;
+                canvas.height = originalImage.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(originalImage, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        const img = new Image();
+                        img.onload = () => {
+                            resolve({
+                                name: name,
+                                blob: blob,
+                                url: url,
+                                size: blob.size,
+                                image: img,
+                                canvas: canvas
+                            });
+                        };
+                        img.src = url;
+                    } else {
+                        reject(new Error(`Failed to convert to ${name}`));
+                    }
+                }, mimeType, quality);
+            });
+        }
+
+        // Display results
+        function displayResults() {
+            // Format cards
+            for (const [name, data] of Object.entries(convertedImages)) {
+                const card = createFormatCard(name, data);
+                formatGrid.appendChild(card);
+            }
+
+            // Preview section
+            const originalPreview = createPreview('Original', originalCanvas);
+            previewContainer.appendChild(originalPreview);
+
+            for (const [name, data] of Object.entries(convertedImages)) {
+                const preview = createPreview(name, data.canvas);
+                previewContainer.appendChild(preview);
+            }
+
+            // Heatmap section
+            if (showHeatmap.checked) {
+                heatmapSection.style.display = 'block';
+                for (const [name, data] of Object.entries(convertedImages)) {
+                    const heatmap = createHeatmap(name, data.canvas);
+                    heatmapGrid.appendChild(heatmap);
+                }
+            } else {
+                heatmapSection.style.display = 'none';
+            }
+
+            // Download buttons
+            for (const [name, data] of Object.entries(convertedImages)) {
+                const btn = createDownloadButton(name, data);
+                downloadButtons.appendChild(btn);
+            }
+        }
+
+        // Create format card
+        function createFormatCard(name, data) {
+            const card = document.createElement('div');
+            card.className = 'format-card';
+
+            const compressionRatio = (originalFileSize / data.size).toFixed(2);
+            const sizeDiff = ((1 - data.size / originalFileSize) * 100).toFixed(1);
+
+            card.innerHTML = `
+                <div class="format-header">
+                    <span class="format-name">${name}</span>
+                    <span class="format-badge">${formatBytes(data.size)}</span>
+                </div>
+                <div class="format-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Original Size:</span>
+                        <span class="stat-value">${formatBytes(originalFileSize)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Compressed Size:</span>
+                        <span class="stat-value">${formatBytes(data.size)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Size Reduction:</span>
+                        <span class="stat-value">${sizeDiff}%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Compression Ratio:</span>
+                        <span class="stat-value">${compressionRatio}x</span>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Create preview item
+        function createPreview(label, canvas) {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'preview-label';
+            labelDiv.textContent = label;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-canvas-wrapper';
+
+            const previewCanvas = document.createElement('canvas');
+            previewCanvas.className = 'preview-canvas';
+            previewCanvas.width = canvas.width;
+            previewCanvas.height = canvas.height;
+            
+            const ctx = previewCanvas.getContext('2d');
+            ctx.drawImage(canvas, 0, 0);
+
+            wrapper.appendChild(previewCanvas);
+            
+            // Zoom functionality
+            wrapper.addEventListener('click', () => {
+                wrapper.classList.toggle('zoomed');
+                previewCanvas.classList.toggle('zoomed');
+            });
+
+            item.appendChild(labelDiv);
+            item.appendChild(wrapper);
+
+            return item;
+        }
+
+        // Create heatmap
+        function createHeatmap(name, canvas) {
+            const item = document.createElement('div');
+            item.className = 'heatmap-item';
+
+            const heatmapCanvas = document.createElement('canvas');
+            heatmapCanvas.className = 'heatmap-canvas';
+            heatmapCanvas.width = canvas.width;
+            heatmapCanvas.height = canvas.height;
+
+            const ctx = heatmapCanvas.getContext('2d');
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            
+            // Get pixel data from converted image
+            const convertedCtx = canvas.getContext('2d');
+            const convertedData = convertedCtx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Calculate pixel differences (ensure same dimensions)
+            const maxLength = Math.min(originalImageData.data.length, convertedData.data.length);
+            for (let i = 0; i < maxLength; i += 4) {
+                const rDiff = Math.abs(originalImageData.data[i] - convertedData.data[i]);
+                const gDiff = Math.abs(originalImageData.data[i + 1] - convertedData.data[i + 1]);
+                const bDiff = Math.abs(originalImageData.data[i + 2] - convertedData.data[i + 2]);
+                
+                const avgDiff = (rDiff + gDiff + bDiff) / 3;
+                
+                // Create heatmap: red for differences, dark for similarities
+                imageData.data[i] = Math.min(255, avgDiff * 5);     // R
+                imageData.data[i + 1] = 0;                          // G
+                imageData.data[i + 2] = 0;                          // B
+                imageData.data[i + 3] = 255;                        // A
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            const label = document.createElement('div');
+            label.className = 'heatmap-label';
+            label.textContent = name + ' vs Original';
+
+            item.appendChild(heatmapCanvas);
+            item.appendChild(label);
+
+            return item;
+        }
+
+        // Create download button
+        function createDownloadButton(name, data) {
+            const btn = document.createElement('button');
+            btn.className = 'download-btn';
+            btn.textContent = `Download ${name}`;
+            btn.addEventListener('click', () => {
+                const a = document.createElement('a');
+                a.href = data.url;
+                a.download = `converted_image.${name.toLowerCase()}`;
+                a.click();
+            });
+            return btn;
+        }
+
+        // Format bytes to human readable
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
